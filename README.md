@@ -8,6 +8,7 @@
 - [centos 7 安装 docker](docs/centos7安装docker.md)
 - [docker]
   - [docker 安装 mysql](./docs/docker/docker安装mysql.md)
+  - [使用 docker 申请 ssl 泛域名证书及自动续期](<./docs/centos7配置https证书(docker方式).md>)
 
 ## 待办
 
