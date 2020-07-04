@@ -1,5 +1,8 @@
 # centos 7 配置 https 证书（docker 方式）
 
+> 警告：  
+> 使用 docker 方式配置 https 证书过程中的自动续期相关命令尚未经过试验。
+
 ## 前言
 
 使用 certbot 生成 LetsEncrypt 的免费的 SSL 泛域名证书并自动续期。
@@ -82,7 +85,11 @@ chmod +x cert.sh
 
 > Let’s Encrypt 的证书有效期为 90 天。为了实现自动续期，可以使用定时任务。
 
-编写自动续期的 shell 脚本
+编写自动续期的 shell 脚本，在 `cert.sh` 同目录下创建 `renew.sh`
+
+```sh
+vi renew.sh # 创建 renew.sh 用于首次申请证书
+```
 
 ```sh
 #!/bin/bash
@@ -90,7 +97,13 @@ sudo docker run -it --rm --name certbot \
   -v "/etc/letsencrypt:/etc/letsencrypt" \
   -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
   -v "/home/yuusha/.secrets:/.secrets" \ # 需要改动的地方，指定家目录下的 `.secrets` 映射到容器中 `/.secrets` 目录
-  certbot/dns-cloudflare renew
+  certbot/dns-cloudflare -q renew
+```
+
+更改文件权限
+
+```sh
+chmod +x renew.sh
 ```
 
 然后设置定时任务
@@ -99,14 +112,13 @@ sudo docker run -it --rm --name certbot \
 sudo crontab -e # 创建定时任务
 ```
 
-填写如下代码，实现每个月 1 号、15 号的 3 点执行一次自动续期检测
+填写如下代码，实现每个月 1 号、15 号的 3 点执行一次 `renew.sh`
 
 ```sh
-0 3 1,15 * * root test -x /usr/bin/certbot -a \! -d /run/systemd/system && perl -e 'sleep int(rand(3600))' && certbot -q renew --renew-hook "systemctl reload nginx"
+0 3 1,15 * * root test -x /usr/bin/certbot -a \! -d /run/systemd/system && perl -e 'sleep int(rand(3600))' && /home/yuusha/docker-cmd/cerbot/example.com/renew.sh && sudo systemctl reload nginx
 ```
 
-> 注意
-> `--renew-hook` 是自动续期后的钩子函数，这里假设使用的 nginx 服务器，所以需要对其进行 `reload` 操作才能更新证书。
+> 注：使用 docker 的方式续期无法使用 `--renew-hook` 钩子函数，所以直接添加 `&& sudo systemctl reload nginx`，没有经过试验，暂不确定正确性。
 
 ## 参考文章
 
