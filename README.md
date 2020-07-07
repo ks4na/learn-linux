@@ -13,7 +13,8 @@
 ## 待办
 
 - [https]
-- [vps]
+- [frp 内网穿透]
 - [linux deploy]
 - [termux]
-- [ngrok]
+- [vps]
+- [vscode remote development]
