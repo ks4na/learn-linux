@@ -85,7 +85,7 @@ chmod +x cert.sh
 编写自动续期的 shell 脚本，在 `cert.sh` 同目录下创建 `renew.sh`
 
 ```sh
-vi renew.sh # 创建 renew.sh 用于首次申请证书
+vi renew.sh # 创建 renew.sh 用于首次续期证书
 ```
 
 ```sh
