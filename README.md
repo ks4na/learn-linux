@@ -18,3 +18,4 @@
 - [termux]
 - [vps]
 - [vscode remote development]
+- [vscode live share]
